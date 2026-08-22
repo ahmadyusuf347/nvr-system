@@ -1,0 +1,42 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: #f4f4f4; display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar */
+.sidebar { width: 250px; background-color: #333; color: white; display: flex; flex-direction: column; padding: 20px 0; justify-content: space-between; }
+.logo { padding: 0 20px 30px; display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 20px; line-height: 1.1; }
+.logo span { display: block; }
+.menu { list-style: none; padding: 0 15px; }
+.menu li { background-color: #888; margin-bottom: 15px; padding: 15px; border-radius: 8px; cursor: pointer; }
+.menu li.active { background-color: #e0e0e0; color: #333; }
+.clock { padding: 20px; text-align: center; font-size: 18px; font-weight: bold; }
+
+/* Main Content */
+.main-content { flex: 1; display: flex; flex-direction: column; }
+.header { background-color: #555; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+.header h2 { font-weight: normal; font-size: 24px; }
+.user-info { display: flex; align-items: center; gap: 20px; }
+.btn-logout { background-color: #4db8ff; border: none; padding: 8px 15px; border-radius: 5px; color: white; cursor: pointer; font-weight: bold; }
+
+/* NVR Grid Layout (Sesuai Gambar) */
+.nvr-container { flex: 1; padding: 20px; background-color: white; overflow-y: auto; }
+.camera-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 20px;
+    height: 100%;
+}
+
+.cam-box { background-color: black; border-radius: 5px; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+.cam-box canvas { width: 100%; height: 100%; object-fit: cover; }
+.cam-label { position: absolute; top: 10px; left: 10px; color: white; font-size: 14px; background: rgba(0,0,0,0.5); padding: 2px 5px; border-radius: 3px; }
+.rec-indicator { position: absolute; top: 10px; right: 10px; color: white; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+.rec-dot { width: 10px; height: 10px; background-color: red; border-radius: 50%; display: inline-block; }
+
+/* Spesifik posisi sesuai gambar desain */
+.cam-large { grid-column: 1 / 3; grid-row: 1 / 3; } /* Tampilan besar di kiri atas */
+.cam-small-1 { grid-column: 3; grid-row: 1; }
+.cam-small-2 { grid-column: 3; grid-row: 2; }
+.cam-small-3 { grid-column: 1; grid-row: 3; }
+.cam-small-4 { grid-column: 2; grid-row: 3; }
+.cam-small-5 { grid-column: 3; grid-row: 3; }
