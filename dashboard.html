@@ -145,7 +145,10 @@
           </div>
           <div class="h-5 w-px bg-zinc-700 hidden sm:block"></div>
           <button
-            onclick="window.location.href = 'login.html'"
+            onclick="
+              sessionStorage.removeItem('isLoggedIn');
+              window.location.href = 'index.html';
+            "
             class="bg-cyan-700 hover:bg-cyan-500 text-white px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-medium flex items-center gap-2 transition shadow-md shadow-cyan-600/10"
           >
             <i class="bi bi-power"></i>
@@ -407,8 +410,14 @@
     </div>
 
     <!-- Script Utama -->
+    <!-- Script Utama -->
     <script>
-      // --- LOGIC SIDEBAR MOBILE ---
+      // --- 1. PENGECEKAN KEAMANAN SEDERHANA ---
+      if (sessionStorage.getItem("isLoggedIn") !== "true") {
+        window.location.replace("index.html");
+      }
+
+      // --- 2. LOGIC SIDEBAR MOBILE ---
       const sidebar = document.getElementById("sidebar");
       const backdrop = document.getElementById("sidebar-backdrop");
       const menuBtn = document.getElementById("menu-btn");
@@ -423,7 +432,7 @@
       closeBtn.addEventListener("click", toggleSidebar);
       backdrop.addEventListener("click", toggleSidebar);
 
-      // --- LOGIC JAM ---
+      // --- 3. LOGIC JAM ---
       function updateClock() {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, "0");
@@ -435,7 +444,7 @@
       setInterval(updateClock, 1000);
       updateClock();
 
-      // --- LOGIC NAVIGASI TAB ---
+      // --- 4. LOGIC NAVIGASI TAB ---
       const tabs = [
         {
           id: "live",
@@ -480,7 +489,6 @@
           e.preventDefault();
 
           tabs.forEach((t) => {
-            // Sembunyikan Semua Section
             const sectionEl = document.getElementById(t.sectionId);
             if (t.id === "live") {
               sectionEl.classList.remove("grid");
@@ -489,14 +497,11 @@
               sectionEl.classList.remove("block");
               sectionEl.classList.add("hidden");
             }
-
-            // Reset Class Navigasi
             const navEl = document.getElementById(t.navId);
             navEl.classList.remove(...activeNavClasses);
             navEl.classList.add(...inactiveNavClasses);
           });
 
-          // Tampilkan Section Aktif
           const activeSection = document.getElementById(tab.sectionId);
           if (tab.id === "live") {
             activeSection.classList.remove("hidden");
@@ -506,120 +511,70 @@
             activeSection.classList.add("block");
           }
 
-          // Tambahkan Class Navigasi Aktif
           const activeNav = document.getElementById(tab.navId);
           activeNav.classList.remove(...inactiveNavClasses);
           activeNav.classList.add(...activeNavClasses);
 
-          // Update Header Text & Icon
           document.getElementById("header-title").innerText = tab.title;
           document.getElementById("header-icon").className =
             `bi ${tab.icon} text-xl hidden sm:block`;
 
-          // Tutup sidebar otomatis di mobile
-          if (window.innerWidth < 1024) {
-            toggleSidebar();
-          }
+          if (window.innerWidth < 1024) toggleSidebar();
 
-          // Trigger data loading API dari Backend
+          // Panggil data tiruan untuk GitHub Pages
           if (tab.id === "storage") loadStorageData();
           if (tab.id === "settings") loadSettingsData();
         });
       });
 
-      // --- API CALLS (Terhubung ke Backend Node.js) ---
-      async function loadStorageData() {
-        try {
-          const res = await fetch("/api/storage");
-          const data = await res.json();
+      // --- 5. DATA TIRUAN (DUMMY API) UNTUK GITHUB PAGES ---
+      function loadStorageData() {
+        // Data statis pengganti API Backend
+        const data = {
+          disk: { percentage: 75, used: "1.5 TB", total: "2.0 TB" },
+          files: [
+            { date: "2026-08-21 14:00", camera: "Parkiran", size: "2.4 GB" },
+            { date: "2026-08-21 15:30", camera: "Lobby", size: "1.1 GB" },
+            { date: "2026-08-21 17:00", camera: "Koridor", size: "3.5 GB" },
+          ],
+        };
 
-          // Update Progress Bar Disk
-          document.getElementById("storage-bar-fill").style.width =
-            `${data.disk.percentage}%`;
-          document.getElementById("storage-text").innerText =
-            `${data.disk.percentage}% Used (${data.disk.used} / ${data.disk.total})`;
+        document.getElementById("storage-bar-fill").style.width =
+          `${data.disk.percentage}%`;
+        document.getElementById("storage-text").innerText =
+          `${data.disk.percentage}% Used (${data.disk.used} / ${data.disk.total})`;
 
-          // Update Tabel File
-          const tbody = document.getElementById("storage-table-body");
-          tbody.innerHTML = ""; // Kosongkan tabel
-
-          data.files.forEach((file) => {
-            tbody.innerHTML += `
-              <tr class="border-b border-zinc-800/50 hover:bg-zinc-800/50 transition">
-                <td class="py-4">${file.date}</td>
-                <td>${file.camera}</td>
-                <td>${file.size}</td>
-                <td>
-                  <button class="bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-1.5 rounded-md mr-2 shadow-md transition"><i class="bi bi-download"></i></button>
-                  <button class="bg-red-700 hover:bg-red-600 text-white px-3 py-1.5 rounded-md shadow-md transition"><i class="bi bi-trash"></i></button>
-                </td>
-              </tr>
-            `;
-          });
-        } catch (err) {
-          console.error("Error loading storage data", err);
-        }
+        const tbody = document.getElementById("storage-table-body");
+        tbody.innerHTML = "";
+        data.files.forEach((file) => {
+          tbody.innerHTML += `
+            <tr class="border-b border-zinc-800/50 hover:bg-zinc-800/50 transition">
+              <td class="py-4">${file.date}</td>
+              <td>${file.camera}</td>
+              <td>${file.size}</td>
+              <td>
+                <button class="bg-cyan-700 hover:bg-cyan-600 text-white px-3 py-1.5 rounded-md mr-2 shadow-md transition"><i class="bi bi-download"></i></button>
+                <button class="bg-red-700 hover:bg-red-600 text-white px-3 py-1.5 rounded-md shadow-md transition"><i class="bi bi-trash"></i></button>
+              </td>
+            </tr>
+          `;
+        });
       }
 
-      async function loadSettingsData() {
-        try {
-          const res = await fetch("/api/settings");
-          const data = await res.json();
-
-          // Set nilai form sesuai data dari backend
-          document.getElementById("setting-retention").value =
-            data.retention_days;
-          document.getElementById("setting-pm2").checked = data.enable_pm2;
-        } catch (err) {
-          console.error("Error loading settings", err);
-        }
+      function loadSettingsData() {
+        // Data statis pengganti API Backend
+        document.getElementById("setting-retention").value = 30;
+        document.getElementById("setting-pm2").checked = true;
       }
 
-      // --- LOGIC SIMPAN PENGATURAN ---
+      // --- 6. LOGIC SIMPAN PENGATURAN (TIRUAN) ---
       const btnSavePrefs = document.getElementById("btn-save-prefs");
       if (btnSavePrefs) {
-        btnSavePrefs.addEventListener("click", async () => {
-          const retentionDays =
-            document.getElementById("setting-retention").value;
-          const enablePm2 = document.getElementById("setting-pm2").checked;
-
-          try {
-            const res = await fetch("/api/settings", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                retention_days: parseInt(retentionDays),
-                enable_pm2: enablePm2,
-              }),
-            });
-            const data = await res.json();
-            if (data.success) {
-              alert("Pengaturan berhasil diperbarui!");
-            }
-          } catch (err) {
-            console.error("Gagal menyimpan pengaturan:", err);
-            alert("Terjadi kesalahan saat menyimpan pengaturan.");
-          }
+        btnSavePrefs.addEventListener("click", () => {
+          alert(
+            "Pengaturan berhasil disimpan secara lokal (mode demo GitHub Pages).",
+          );
         });
-      }
-
-      // --- KONEKSI JSMPEG (ASLI) ---
-      const serverIp = "ws://" + window.location.hostname;
-      try {
-        new JSMpeg.Player(`${serverIp}:9991`, {
-          canvas: document.getElementById("cam-1"),
-          autoplay: true,
-          audio: false,
-        });
-        new JSMpeg.Player(`${serverIp}:9992`, {
-          canvas: document.getElementById("cam-2"),
-          autoplay: true,
-          audio: false,
-        });
-      } catch (e) {
-        console.log("Menunggu koneksi stream RTSP...", e);
       }
     </script>
   </body>

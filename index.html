@@ -94,25 +94,28 @@
     </div>
 
     <script>
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const res = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              username: e.target.username.value,
-              password: e.target.password.value,
-            }),
-          });
-          const data = await res.json();
-          if (data.success) {
-            window.location.href = "dashboard.html";
-          } else {
-            alert("Login Gagal: " + data.message);
-          }
-        });
+      // Hapus jika ada sessionStorage sebelumnya
+      sessionStorage.removeItem("isLoggedIn");
+
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const user = e.target.username.value;
+        const pass = e.target.password.value;
+
+        // Akun statis yang dibuat menggunakan JavaScript
+        const validUsername = "admin";
+        const validPassword = "nvrsystem";
+
+        if (user === validUsername && pass === validPassword) {
+          // Simpan sesi login ke browser
+          sessionStorage.setItem("isLoggedIn", "true");
+          // Arahkan ke dashboard
+          window.location.href = "dashboard.html";
+        } else {
+          alert("Login Gagal: Username atau Password salah!");
+        }
+      });
     </script>
   </body>
 </html>
